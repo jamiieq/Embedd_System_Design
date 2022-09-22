@@ -1,10 +1,11 @@
 from queue import Queue
 from threading import Thread
 
+
 N = 6 
+item = 3
 
 def Reader(iq,qA,qC):
-    while (True):
         In = iq.get("data")
         print( "Reader get iq:", In)
       
@@ -17,7 +18,7 @@ def Reader(iq,qA,qC):
         print("Reader put qC")
 
 def Conv(qA,qB):     
-    while (True):
+    for i in range(N):
         x = qA.get()
         print("Conv get qA:", x)
         r1 = "r1"
@@ -26,9 +27,9 @@ def Conv(qA,qB):
         r2 = "r2"
         qB.put(r2)
         print("Conv put qB")
-        
+      
 def Merge(qB,oq,qC):   
-  while True:
+  while (True):
     x = qC.get()
     print("Merge get qC: ", x)
     d = [0,0,0,0,0,0,0,0,0,0,0,0]  # modify
@@ -40,17 +41,19 @@ def Merge(qB,oq,qC):
     print("Merge put oq")
 
 
-iq = {
-  "data": 3
-}
-qA= Queue(maxsize=6)
-qB= Queue(maxsize=1)
-qC= Queue(maxsize=12)
+iq = Queue(1)
+iq.put(item)    #change in other code 
+qA= Queue(6)
+qB= Queue(12)
+qC= Queue(1)
 oq = Queue()
 
 t1 = Thread(target=Reader, args=(iq,qA,qC))
 t2 = Thread(target=Conv, args=(qA,qB))
 t3 = Thread(target=Merge, args=(qB,oq,qC))
 t1.start()
+t1.join()
+
 t2.start()
+t2.join()
 t3.start()
